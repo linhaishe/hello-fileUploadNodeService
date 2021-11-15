@@ -32,6 +32,7 @@
    codeText :状态描述,
    originalFilename:文件原始名称，
    servicePath:文件服务器地址
+
    3.单文件上传处理「BASE64」
    url:/upload_ _S ingle_ base64
    method: POST
@@ -43,6 +44,7 @@
    codeText :状态描述,
    originalFilename:文件原始名称，
    servicePath:文件服务器地址
+
    4.上传切片
    url:/upload_ chunk
    method: POST
@@ -55,6 +57,7 @@
    codeText :状态描述,
    originalFilename:文件原始名称，
    servicePath:文件服务器地址
+
    5.合并切片
    url:/upload_ merge
    method: POST
@@ -66,6 +69,7 @@
    codeText :状恋描述,
    originalF ilename: XíMá8R,
    servicePath:文件服努器地址
+   
    6.获取已经上传的切片
    url:/upload_ already
    method :GET

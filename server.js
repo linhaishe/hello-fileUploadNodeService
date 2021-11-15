@@ -11,6 +11,7 @@ const app = express(),
   HOSTNAME = `${HOST}:${PORT}`;
 
 /*-中间件-*/
+//允许任何的客户端向我发请求
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   req.method === 'OPTIONS'
@@ -34,15 +35,17 @@ const uploadDir = `${__dirname}/upload`;
 const multiparty_upload = function multiparty_upload(req, auto) {
   typeof auto !== 'boolean' ? (auto = false) : null;
   let config = {
-    maxFieldsSize: 200 * 1024 * 1024,
+    maxFieldsSize: 200 * 1024 * 1024, //200M
   };
-  //传到我指定的目录下
+  //传到我指定的目录下，通过插件处理文件名，自动编译成新的名字
   if (auto) {
     config.uploadDir = uploadDir;
   }
   return new Promise(async (resolve, reject) => {
+    //让我们看一个服务器处理的效果
     await delay();
     //fields, files,fields传的是文件名，files传的是文件对象，因为前端传的时文件和文件名
+    //Form的方法可以根据我们传入的config配置项进行解析，通过客户端传入的formdata格式的数据进行解析
     new multiparty.Form(config).parse(req, (err, fields, files) => {
       //如果失败，则抛出错误
       if (err) {
@@ -66,8 +69,11 @@ app.use(
 
 app.post('/upload_single', async (req, res) => {
   try {
+    //await 只有拥有但会数据的时候才会继续往下走，否则return,所有错误，catch都会接收
     let { fields, files } = await multiparty_upload(req, true);
     console.log('files.file[0]', files.file[0]);
+    console.log('files', files);
+    console.log('fields', fields);
     let file = (files.file && files.file[0]) || {};
     res.send({
       code: 0,
@@ -89,3 +95,28 @@ app.listen(PORT, () => {
     `THE WEB SERVICE IS CREATED SUCCESSFULLY AND IS LISTENING TO THE PORT: ${PORT}, YOU CAN VISIT: ${HOSTNAME}`
   );
 });
+
+/**
+ * files.file[0] {
+  fieldName: 'file',
+  originalFilename: 'Draft-29.jpg',
+  path: '/Users/chenruo/Documents/GitHub/hello-fileUploadNodeService/upload/GSHFzhXgvE6HETmy_k2zNnn5.jpg',
+  headers: {
+    'content-disposition': 'form-data; name="file"; filename="Draft-29.jpg"',
+    'content-type': 'image/jpeg'
+  },
+  size: 497743
+}
+files {
+  file: [
+    {
+      fieldName: 'file',
+      originalFilename: 'Draft-29.jpg',
+      path: '/Users/chenruo/Documents/GitHub/hello-fileUploadNodeService/upload/GSHFzhXgvE6HETmy_k2zNnn5.jpg',
+      headers: [Object],
+      size: 497743
+    }
+  ]
+}
+fields { filename: [ 'Draft-29.jpg' ] }
+*/
